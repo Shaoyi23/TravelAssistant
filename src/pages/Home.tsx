@@ -1,257 +1,161 @@
-import React, { useState } from "react";
-import TripForm from "../components/TripForm";
-import TaskProgress from "../components/TaskProgress";
-import ConversationHistory from "../components/ConversationHistory";
-import TripPlanDocument from "../components/TripPlanDocument";
-import useTripStore from "../store/tripStore";
-import {
-  generateTripPlan as generateTripPlanAI,
-  getAIResponse,
-} from "../utils/aiService";
-import { Card, CardContent } from "./../components/ui/card";
-import { Input } from "./../components/ui/input";
-import { Button } from "./../components/ui/button";
-import { Send, Sparkles } from "lucide-react";
-import type { TripRequirements } from "../store/tripStore";
+import { useState } from "react";
+import { Navigation } from "../components/Navigation";
+import { Hero } from "../components/Hero";
+import { SearchBar } from "../components/SearchBar";
+import { FilterSection } from "../components/FilterSection";
+import { DestinationCard } from "../components/DestinationCard";
 
-function Home() {
-  const [isPlanning, setIsPlanning] = useState(false);
-  const [newMessage, setNewMessage] = useState("");
-  const {
-    conversationHistory,
-    agentTasks,
-    setAgentTasks,
-    addConversation,
-    setTripPlan,
-    tripPlan,
-  } = useTripStore();
+export default function App() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedFilters, setSelectedFilters] = useState({
+    tripType: "all",
+    budget: "all",
+    duration: "all",
+  });
 
-  // 模拟AI Agent任务分解
-  const handleTripSubmit = (requirements: TripRequirements) => {
-    setIsPlanning(true);
+  const destinations = [
+    {
+      id: 1,
+      name: "巴厘岛",
+      location: "印度尼西亚",
+      description:
+        "体验热带天堂的魅力，享受私人海滩和豪华度假村，探索古老寺庙和稻田美景",
+      image:
+        "https://images.unsplash.com/photo-1714412192114-61dca8f15f68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cm9waWNhbCUyMGJlYWNoJTIwcGFyYWRpc2V8ZW58MXx8fHwxNzY4MDA3NDk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      price: "¥4,500",
+      duration: "7天6晚",
+      tags: ["海滩", "度假", "文化"],
+      rating: 4.8,
+      reviews: 1240,
+      recommended: true,
+    },
+    {
+      id: 2,
+      name: "巴黎",
+      location: "法国",
+      description:
+        "漫步在浪漫之都的街头，参观埃菲尔铁塔、卢浮宫，品尝正宗法式美食",
+      image:
+        "https://images.unsplash.com/photo-1431274172761-fca41d930114?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDF8fHx8MTc2Nzk4MzIyNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      price: "¥8,800",
+      duration: "10天9晚",
+      tags: ["城市", "文化", "美食"],
+      rating: 4.9,
+      reviews: 2156,
+      recommended: true,
+    },
+    {
+      id: 3,
+      name: "东京",
+      location: "日本",
+      description:
+        "探索现代科技与传统文化完美融合的国际大都市，体验独特的日本风情",
+      image:
+        "https://images.unsplash.com/photo-1583915223588-7d88ebf23414?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0b2t5byUyMGNpdHklMjBuaWdodHxlbnwxfHx8fDE3NjgwNDg2Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      price: "¥6,200",
+      duration: "6天5晚",
+      tags: ["城市", "购物", "美食"],
+      rating: 4.7,
+      reviews: 1890,
+      recommended: false,
+    },
+    {
+      id: 4,
+      name: "瑞士阿尔卑斯",
+      location: "瑞士",
+      description:
+        "在壮观的雪山景色中度假，体验滑雪、徒步等户外活动，享受纯净自然",
+      image:
+        "https://images.unsplash.com/photo-1597434429739-2574d7e06807?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMGxhbmRzY2FwZSUyMG5hdHVyZXxlbnwxfHx8fDE3Njc5ODgxMTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      price: "¥12,000",
+      duration: "8天7晚",
+      tags: ["自然", "冒险", "滑雪"],
+      rating: 4.9,
+      reviews: 987,
+      recommended: false,
+    },
+    {
+      id: 5,
+      name: "圣托里尼",
+      location: "希腊",
+      description: "欣赏爱琴海的绝美日落，漫步白色小镇，享受浪漫的地中海风情",
+      image:
+        "https://images.unsplash.com/photo-1664112732671-877dc0030ba7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50b3JpbmklMjBncmVlY2UlMjBpc2xhbmR8ZW58MXx8fHwxNzY4MDQ4NjQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      price: "¥7,600",
+      duration: "7天6晚",
+      tags: ["海岛", "浪漫", "摄影"],
+      rating: 4.8,
+      reviews: 1567,
+      recommended: true,
+    },
+    {
+      id: 6,
+      name: "纽约",
+      location: "美国",
+      description:
+        "体验不夜城的繁华魅力，参观自由女神像、时代广场、中央公园等地标",
+      image:
+        "https://images.unsplash.com/photo-1570304816841-906a17d7b067?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuZXclMjB5b3JrJTIwc2t5bGluZXxlbnwxfHx8fDE3Njc5Mzk0NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      price: "¥9,500",
+      duration: "9天8晚",
+      tags: ["城市", "购物", "艺术"],
+      rating: 4.6,
+      reviews: 2341,
+      recommended: false,
+    },
+  ];
 
-    // 添加用户对话记录
-    addConversation({
-      message: `我想去${requirements.destination}旅行，预算${requirements.budget}元，${
-        requirements.days
-      }天，兴趣包括${requirements.interests.join("、")}`,
-      isUser: true,
-    });
-
-    // AI Agent分解任务
-    const tasks = [
-      {
-        id: 1,
-        name: "查询目的地天气",
-        status: "pending" as const,
-        description: `查询${requirements.destination}未来${requirements.days}天的天气情况`,
-      },
-      {
-        id: 2,
-        name: "搜索景点",
-        status: "pending" as const,
-        description: `根据兴趣${requirements.interests.join("、")}搜索${
-          requirements.destination
-        }的热门景点`,
-      },
-      {
-        id: 3,
-        name: "规划路线",
-        status: "pending" as const,
-        description: `根据天数${requirements.days}和景点分布规划合理的旅行路线`,
-      },
-      {
-        id: 4,
-        name: "推荐酒店",
-        status: "pending" as const,
-        description: `根据预算${requirements.budget}推荐${requirements.destination}的合适酒店`,
-      },
-      {
-        id: 5,
-        name: "生成旅行计划",
-        status: "pending" as const,
-        description: `整合所有信息生成完整的旅行计划文档`,
-      },
-    ];
-
-    setAgentTasks(tasks);
-
-    // 模拟任务执行过程
-    simulateTaskExecution(tasks, requirements);
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
   };
 
-  // 模拟任务执行
-  const simulateTaskExecution = (tasks: typeof agentTasks, requirements: TripRequirements) => {
-    let taskIndex = 0;
-
-    const executeNextTask = async () => {
-      if (taskIndex < tasks.length) {
-        const currentTask = tasks[taskIndex];
-
-        // 更新任务状态为进行中
-        setAgentTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task.id === currentTask.id
-              ? { ...task, status: "in_progress" }
-              : task
-          )
-        );
-
-        // 添加AI处理中消息
-        addConversation(`正在${currentTask.description}...`);
-
-        // 模拟任务执行时间
-        setTimeout(() => {
-          // 更新任务状态为完成
-          setAgentTasks((prevTasks) =>
-            prevTasks.map((task) =>
-              task.id === currentTask.id
-                ? { ...task, status: "completed" }
-                : task
-            )
-          );
-
-          // 添加任务完成消息
-          addConversation(`${currentTask.name}已完成！`);
-
-          taskIndex++;
-          executeNextTask();
-        }, 1500);
-      } else {
-        // 所有任务完成，生成旅行计划
-        await generateTripPlan(requirements);
-        setIsPlanning(false);
-      }
-    };
-
-    executeNextTask();
+  const handleFilterChange = (filterType: string, value: string) => {
+    setSelectedFilters((prev) => ({
+      ...prev,
+      [filterType]: value,
+    }));
   };
 
-  // 生成旅行计划
-  const generateTripPlan = async (requirements: TripRequirements) => {
-    try {
-      // 添加AI处理中消息
-      addConversation("正在为您生成详细的旅行计划...");
+  const filteredDestinations = destinations.filter((dest) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      dest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dest.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dest.description.toLowerCase().includes(searchQuery.toLowerCase());
 
-      // 使用真实AI生成旅行计划
-      const plan = await generateTripPlanAI(requirements);
-
-      setTripPlan(plan);
-
-      // 添加计划完成消息
-      addConversation(
-        `旅行计划已生成完成！我们为您准备了详细的行程安排。`
-      );
-    } catch (error: any) {
-      console.error("生成旅行计划失败:", error);
-      addConversation(`生成旅行计划时发生错误: ${error.message}`);
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || !tripPlan) return;
-
-    const userMessage = newMessage;
-    setNewMessage("");
-
-    // 添加用户消息
-    addConversation({
-      message: userMessage,
-      isUser: true,
-    });
-
-    // 使用真实AI获取回复
-    try {
-      const aiResponse = await getAIResponse(userMessage, tripPlan);
-      addConversation({
-        message: aiResponse,
-        isUser: false,
-      });
-    } catch (error: any) {
-      console.error("获取AI回复失败:", error);
-      addConversation({
-        message: `获取AI回复时发生错误: ${error.message}`,
-        isUser: false,
-      });
-    }
-  };
+    return matchesSearch;
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto space-y-8">
-        {/* 页面标题 */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-              AI旅行规划助手
-            </h1>
-            <Sparkles className="w-8 h-8 text-primary" />
-          </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            输入您的旅行需求，让AI为您规划完美的旅程
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <Navigation />
+      <Hero />
 
-        {/* 旅行表单 */}
-        <TripForm onSubmit={handleTripSubmit} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <SearchBar onSearch={handleSearch} />
+        <FilterSection
+          selectedFilters={selectedFilters}
+          onFilterChange={handleFilterChange}
+        />
 
-        {/* 任务进度 */}
-        {isPlanning && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <h3 className="text-xl font-semibold">AI正在为您规划旅程...</h3>
-              </div>
-              <TaskProgress tasks={agentTasks} />
-            </CardContent>
-          </Card>
-        )}
-
-        {/* 旅行计划和对话 */}
-        {tripPlan && (
-          <div className="space-y-6">
-            {/* 对话历史 */}
-            <div className="space-y-4">
-              <ConversationHistory conversationHistory={conversationHistory} />
-
-              {/* 消息输入框 */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendMessage();
-                        }
-                      }}
-                      placeholder="输入您的问题或建议..."
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={!newMessage.trim()}
-                      size="icon"
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+        {/* Results Section */}
+        <div className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl text-gray-900 mb-2">AI 为您推荐</h2>
+              <p className="text-gray-600">
+                基于您的偏好，我们精选了 {filteredDestinations.length} 个目的地
+              </p>
             </div>
-
-            {/* 旅行计划文档 */}
-            <TripPlanDocument tripPlan={tripPlan} />
           </div>
-        )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredDestinations.map((destination) => (
+              <DestinationCard key={destination.id} destination={destination} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
-export default Home;
