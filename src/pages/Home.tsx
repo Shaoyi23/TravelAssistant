@@ -7,6 +7,7 @@ import {
   destinationsService,
   type Destination,
 } from "../services/destinations";
+import { DestinationDetailModal } from "../components/DestinationDetailModal";
 
 export function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,6 +19,9 @@ export function Home() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDestination, setSelectedDestination] =
+    useState<Destination | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   useEffect(() => {
     fetchDestinations();
@@ -57,6 +61,14 @@ export function Home() {
 
     return matchesSearch;
   });
+  const handleDestinationClick = (destination: Destination) => {
+    setSelectedDestination(destination);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsDetailModalOpen(false);
+  };
 
   return (
     <>
@@ -110,6 +122,7 @@ export function Home() {
                   <DestinationCard
                     key={destination.id}
                     destination={destination}
+                    onViewDetails={handleDestinationClick}
                   />
                 ))}
               </div>
@@ -117,6 +130,11 @@ export function Home() {
           </div>
         )}
       </div>
+      <DestinationDetailModal
+        destination={selectedDestination}
+        isOpen={isDetailModalOpen}
+        onClose={handleModalClose}
+      />
     </>
   );
 }

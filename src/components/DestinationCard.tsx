@@ -1,24 +1,15 @@
 import { MapPin, Clock, Star, Heart, TrendingUp } from "lucide-react";
-
-interface Destination {
-  id: number;
-  name: string;
-  location: string;
-  description: string;
-  image: string;
-  price: string;
-  duration: string;
-  tags: string[];
-  rating: number;
-  reviews: number;
-  recommended: boolean;
-}
+import type { Destination } from "../services/destinations";
 
 interface DestinationCardProps {
   destination: Destination;
+  onViewDetails?: (destination: Destination) => void;
 }
 
-export function DestinationCard({ destination }: DestinationCardProps) {
+export function DestinationCard({
+  destination,
+  onViewDetails,
+}: DestinationCardProps) {
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
       {/* Image Container */}
@@ -94,7 +85,10 @@ export function DestinationCard({ destination }: DestinationCardProps) {
             <div className="text-sm text-gray-500">起价</div>
             <div className="text-2xl text-gray-900">{destination.price}</div>
           </div>
-          <button className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg">
+          <button
+            className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg"
+            onClick={() => onViewDetails && onViewDetails(destination)}
+          >
             查看详情
           </button>
         </div>

@@ -3,6 +3,22 @@ import { SearchBar } from "../components/SearchBar";
 import { FilterSection } from "../components/FilterSection";
 import { DestinationCard } from "../components/DestinationCard";
 import { Hero } from "../components/Hero";
+import { DestinationDetailModal } from "../components/DestinationDetailModal";
+
+// 定义 Destination 类型
+interface Destination {
+  id: number;
+  name: string;
+  location: string;
+  description: string;
+  image: string;
+  price: string;
+  duration: string;
+  tags: string[];
+  rating: number;
+  reviews: number;
+  recommended: boolean;
+}
 
 export function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,7 +28,12 @@ export function ExplorePage() {
     duration: "all",
   });
 
-  const destinations = [
+  // 弹窗状态管理
+  const [selectedDestination, setSelectedDestination] =
+    useState<Destination | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+  const destinations: Destination[] = [
     {
       id: 1,
       name: "巴厘岛",
@@ -125,6 +146,15 @@ export function ExplorePage() {
     return matchesSearch;
   });
 
+  const handleDestinationClick = (destination: Destination) => {
+    setSelectedDestination(destination);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsDetailModalOpen(false);
+  };
+
   return (
     <>
       <Hero />
@@ -149,11 +179,21 @@ export function ExplorePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredDestinations.map((destination) => (
-              <DestinationCard key={destination.id} destination={destination} />
+              <DestinationCard
+                key={destination.id}
+                destination={destination}
+                onViewDetails={handleDestinationClick}
+              />
             ))}
           </div>
         </div>
       </div>
+
+      <DestinationDetailModal
+        destination={selectedDestination}
+        isOpen={isDetailModalOpen}
+        onClose={handleModalClose}
+      />
     </>
   );
 }
