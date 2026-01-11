@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapPin,
   Calendar,
@@ -9,9 +9,60 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import {
+  userService,
+  type UserFavorite,
+  type UserTrip,
+  type UserAchievement,
+} from "../services/content";
 
 export function ProfilePage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [favorites, setFavorites] = useState<UserFavorite[]>([]);
+  const [trips, setTrips] = useState<UserTrip[]>([]);
+  const [achievements, setAchievements] = useState<UserAchievement[]>([]);
+  const [loading, setLoading] = useState({
+    favorites: true,
+    trips: true,
+    achievements: true,
+  });
+  const [errors, setErrors] = useState<{
+    favorites: string | null;
+    trips: string | null;
+    achievements: string | null;
+  }>({
+    favorites: null,
+    trips: null,
+    achievements: null,
+  });
+
+  const DEMO_USER_ID = "demo-user";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [favs, tripsData, achievementsData] = await Promise.all([
+          userService.getFavorites(DEMO_USER_ID),
+          userService.getTrips(DEMO_USER_ID),
+          userService.getAchievements(DEMO_USER_ID),
+        ]);
+        setFavorites(favs);
+        setTrips(tripsData);
+        setAchievements(achievementsData);
+      } catch (err) {
+        setErrors({
+          favorites: "Failed to load favorites",
+          trips: "Failed to load trips",
+          achievements: "Failed to load achievements",
+        });
+        console.error("Failed to fetch user data:", err);
+      } finally {
+        setLoading({ favorites: false, trips: false, achievements: false });
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const tabs = [
     { id: "overview", label: "概览" },
@@ -23,133 +74,13 @@ export function ProfilePage() {
   const userStats = [
     { label: "访问国家", value: "23", icon: MapPin, color: "blue" },
     { label: "旅行天数", value: "156", icon: Calendar, color: "purple" },
-    { label: "收藏目的地", value: "48", icon: Heart, color: "red" },
+    {
+      label: "收藏目的地",
+      value: String(favorites.length || 48),
+      icon: Heart,
+      color: "red",
+    },
     { label: "发布攻略", value: "12", icon: BookOpen, color: "green" },
-  ];
-
-  const favorites = [
-    {
-      id: 1,
-      name: "巴厘岛",
-      location: "印度尼西亚",
-      image:
-        "https://images.unsplash.com/photo-1714412192114-61dca8f15f68?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0cm9waWNhbCUyMGJlYWNoJTIwcGFyYWRpc2V8ZW58MXx8fHwxNzY4MDA3NDk2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      savedDate: "2026-01-08",
-    },
-    {
-      id: 2,
-      name: "圣托里尼",
-      location: "希腊",
-      image:
-        "https://images.unsplash.com/photo-1664112732671-877dc0030ba7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50b3JpbmklMjBncmVlY2UlMjBpc2xhbmR8ZW58MXx8fHwxNzY4MDQ4NjQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      savedDate: "2026-01-05",
-    },
-    {
-      id: 3,
-      name: "东京",
-      location: "日本",
-      image:
-        "https://images.unsplash.com/photo-1583915223588-7d88ebf23414?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0b2t5byUyMGNpdHklMjBuaWdodHxlbnwxfHx8fDE3NjgwNDg2Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      savedDate: "2026-01-02",
-    },
-    {
-      id: 4,
-      name: "巴黎",
-      location: "法国",
-      image:
-        "https://images.unsplash.com/photo-1431274172761-fca41d930114?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDF8fHx8MTc2Nzk4MzIyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      savedDate: "2025-12-28",
-    },
-  ];
-
-  const trips = [
-    {
-      id: 1,
-      destination: "东京",
-      country: "日本",
-      dates: "2025年12月",
-      duration: "7天",
-      status: "completed",
-      images: [
-        "https://images.unsplash.com/photo-1583915223588-7d88ebf23414?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0b2t5byUyMGNpdHklMjBuaWdodHxlbnwxfHx8fDE3NjgwNDg2Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      photos: 234,
-    },
-    {
-      id: 2,
-      destination: "巴黎",
-      country: "法国",
-      dates: "2025年10月",
-      duration: "10天",
-      status: "completed",
-      images: [
-        "https://images.unsplash.com/photo-1431274172761-fca41d930114?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDF8fHx8MTc2Nzk4MzIyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      photos: 456,
-    },
-    {
-      id: 3,
-      destination: "圣托里尼",
-      country: "希腊",
-      dates: "2026年3月",
-      duration: "6天",
-      status: "planned",
-      images: [
-        "https://images.unsplash.com/photo-1664112732671-877dc0030ba7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50b3JpbmklMjBncmVlY2UlMjBpc2xhbmR8ZW58MXx8fHwxNzY4MDQ4NjQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      photos: 0,
-    },
-  ];
-
-  const achievements = [
-    {
-      id: 1,
-      title: "探索先锋",
-      description: "访问了10个不同的国家",
-      icon: MapPin,
-      earned: true,
-      date: "2025-11-15",
-    },
-    {
-      id: 2,
-      title: "摄影达人",
-      description: "上传了100张旅行照片",
-      icon: Camera,
-      earned: true,
-      date: "2025-10-20",
-    },
-    {
-      id: 3,
-      title: "攻略专家",
-      description: "发布了10篇旅行攻略",
-      icon: BookOpen,
-      earned: true,
-      date: "2025-09-08",
-    },
-    {
-      id: 4,
-      title: "社区之星",
-      description: "获得了1000个点赞",
-      icon: TrendingUp,
-      earned: true,
-      date: "2025-12-01",
-    },
-    {
-      id: 5,
-      title: "环球旅行家",
-      description: "访问50个国家",
-      icon: Award,
-      earned: false,
-      progress: "23/50",
-    },
-    {
-      id: 6,
-      title: "影响力者",
-      description: "获得10000个关注者",
-      icon: Users,
-      earned: false,
-      progress: "2.3k/10k",
-    },
   ];
 
   return (
@@ -338,8 +269,8 @@ export function ProfilePage() {
               >
                 <div className="relative h-48">
                   <img
-                    src={item.image}
-                    alt={item.name}
+                    src={item.destination_image || ""}
+                    alt={item.destination_name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <button className="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
@@ -347,10 +278,14 @@ export function ProfilePage() {
                   </button>
                 </div>
                 <div className="p-4">
-                  <h3 className="text-gray-900 mb-1">{item.name}</h3>
-                  <p className="text-sm text-gray-500 mb-2">{item.location}</p>
+                  <h3 className="text-gray-900 mb-1">
+                    {item.destination_name}
+                  </h3>
+                  <p className="text-sm text-gray-500 mb-2">
+                    {item.destination_location}
+                  </p>
                   <p className="text-xs text-gray-400">
-                    收藏于 {item.savedDate}
+                    收藏于 {item.saved_date}
                   </p>
                 </div>
               </div>
@@ -368,7 +303,7 @@ export function ProfilePage() {
                 <div className="flex flex-col md:flex-row">
                   <div className="relative w-full md:w-64 h-48">
                     <img
-                      src={trip.images[0]}
+                      src={trip.cover_image || ""}
                       alt={trip.destination}
                       className="w-full h-full object-cover"
                     />
@@ -377,10 +312,10 @@ export function ProfilePage() {
                         计划中
                       </div>
                     )}
-                    {trip.status === "completed" && trip.photos > 0 && (
+                    {trip.status === "completed" && trip.photos_count > 0 && (
                       <div className="absolute bottom-3 right-3 bg-black/70 text-white px-3 py-1 rounded-full text-xs flex items-center gap-1">
                         <Camera className="w-3 h-3" />
-                        <span>{trip.photos}</span>
+                        <span>{trip.photos_count}</span>
                       </div>
                     )}
                   </div>
@@ -396,7 +331,14 @@ export function ProfilePage() {
                     <div className="flex items-center gap-6 text-sm text-gray-600 mb-4">
                       <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4" />
-                        <span>{trip.dates}</span>
+                        <span>
+                          {trip.start_date
+                            ? new Date(trip.start_date).toLocaleDateString(
+                                "zh-CN",
+                                { year: "numeric", month: "long" }
+                              )
+                            : trip.duration}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4" />
@@ -434,9 +376,9 @@ export function ProfilePage() {
                     }`}
                   >
                     <Icon
-                      className={`w-8 h-8 ${
-                        achievement.earned ? "text-white" : "text-gray-400"
-                      }`}
+                    // className={`w-8 h-8 ${
+                    //   achievement.earned ? "text-white" : "text-gray-400"
+                    // }`}
                     />
                   </div>
                   <h3 className="text-lg text-gray-900 mb-2">
@@ -447,7 +389,7 @@ export function ProfilePage() {
                   </p>
                   {achievement.earned ? (
                     <p className="text-xs text-gray-500">
-                      获得于 {achievement.date}
+                      获得于 {achievement.earned_date}
                     </p>
                   ) : (
                     <div className="text-xs text-gray-500">

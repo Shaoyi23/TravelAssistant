@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MessageCircle,
   Heart,
@@ -8,9 +8,30 @@ import {
   Video,
   MapPin,
 } from "lucide-react";
+import { communityService, type CommunityPost } from "../services/content";
 
 export function CommunityPage() {
   const [activeTab, setActiveTab] = useState("all");
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        setLoading(true);
+        const data = await communityService.getAll();
+        setPosts(data);
+      } catch (err) {
+        setError("Failed to fetch posts");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPosts();
+  }, []);
 
   const tabs = [
     { id: "all", label: "全部动态" },
@@ -19,109 +40,73 @@ export function CommunityPage() {
     { id: "questions", label: "问答" },
   ];
 
-  const posts = [
-    {
-      id: 1,
-      author: {
-        name: "旅行摄影师小李",
-        avatar:
-          "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-        verified: true,
-      },
-      content:
-        "刚从圣托里尼回来！这次拍到了最美的日落🌅 分享一些拍摄心得：最佳时间是傍晚7-8点，推荐在Oia城堡位置，记得提前1小时占位置。器材用的是索尼A7M4 + 24-70GM，光圈f/8，ISO 100。",
-      images: [
-        "https://images.unsplash.com/photo-1664112732671-877dc0030ba7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50b3JpbmklMjBncmVlY2UlMjBpc2xhbmR8ZW58MXx8fHwxNzY4MDQ4NjQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      location: "圣托里尼，希腊",
-      timestamp: "2 小时前",
-      likes: 1234,
-      comments: 89,
-      shares: 45,
-      trending: true,
-    },
-    {
-      id: 2,
-      author: {
-        name: "美食博主王小厨",
-        avatar:
-          "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-        verified: false,
-      },
-      content:
-        "东京美食打卡第三天！今天吃了传说中的筑地市场寿司🍣 真的超级新鲜，师傅现场捏制，入口即化。人均消费3000日元左右，性价比超高！推荐早上8点前去，避开人流高峰。",
-      images: [
-        "https://images.unsplash.com/photo-1583915223588-7d88ebf23414?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0b2t5byUyMGNpdHklMjBuaWdodHxlbnwxfHx8fDE3NjgwNDg2Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      location: "东京，日本",
-      timestamp: "5 小时前",
-      likes: 856,
-      comments: 67,
-      shares: 32,
-      trending: true,
-    },
-    {
-      id: 3,
-      author: {
-        name: "背包客张三",
-        avatar:
-          "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-        verified: false,
-      },
-      content:
-        "【求助】第一次去巴黎，有什么需要特别注意的事项吗？听说地铁上小偷比较多？大家有推荐的住宿区域吗？预算在每晚500-800元之间。谢谢！",
-      images: [],
-      location: null,
-      timestamp: "昨天 18:30",
-      likes: 234,
-      comments: 156,
-      shares: 12,
-      trending: false,
-    },
-    {
-      id: 4,
-      author: {
-        name: "户外探险家",
-        avatar:
-          "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-        verified: true,
-      },
-      content:
-        "瑞士阿尔卑斯山徒步第五天！今天的风景真的太震撼了🏔️ 海拔3000米的观景台，360度雪山环绕。虽然很累但完全值得。提醒大家一定要带防晒霜和墨镜，高海拔紫外线很强。",
-      images: [
-        "https://images.unsplash.com/photo-1597434429739-2574d7e06807?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMGxhbmRzY2FwZSUyMG5hdHVyZXxlbnwxfHx8fDE3Njc5ODgxMTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      location: "少女峰，瑞士",
-      timestamp: "昨天 14:20",
-      likes: 2341,
-      comments: 178,
-      shares: 89,
-      trending: true,
-    },
-    {
-      id: 5,
-      author: {
-        name: "城市探索者",
-        avatar:
-          "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-        verified: false,
-      },
-      content:
-        "纽约的街头艺术真的太酷了！在布鲁克林区发现了好多涂鸦墙🎨 每一幅都是艺术品。分享几个拍照好去处：Bushwick Collective、DUMBO区域、威廉斯堡大桥下。",
-      images: [
-        "https://images.unsplash.com/photo-1570304816841-906a17d7b067?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxuZXclMjB5b3JrJTIwc2t5bGluZXxlbnwxfHx8fDE3Njc5Mzk0NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      location: "纽约，美国",
-      timestamp: "2 天前",
-      likes: 567,
-      comments: 43,
-      shares: 28,
-      trending: false,
-    },
-  ];
-
   const filteredPosts =
     activeTab === "trending" ? posts.filter((p) => p.trending) : posts;
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) {
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      if (diffHours === 0) {
+        const diffMins = Math.floor(diffMs / (1000 * 60));
+        return diffMins <= 1 ? "刚刚" : `${diffMins} 分钟前`;
+      }
+      return diffHours === 1 ? "1 小时前" : `${diffHours} 小时前`;
+    }
+    if (diffDays === 1) return "昨天";
+    if (diffDays < 7) return `${diffDays} 天前`;
+    return date.toLocaleDateString("zh-CN");
+  };
+
+  if (loading) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-8">
+          <h1 className="text-4xl text-gray-900 mb-4">旅行社区</h1>
+          <p className="text-lg text-gray-600">
+            与全球旅行者分享经验，获取灵感
+          </p>
+        </div>
+        <div className="space-y-6">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-white rounded-xl shadow-sm p-6 animate-pulse"
+            >
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/6 mb-4"></div>
+                  <div className="h-20 bg-gray-200 rounded w-full"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            重新加载
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -199,14 +184,14 @@ export function CommunityPage() {
             <div className="p-6 pb-4">
               <div className="flex items-start gap-4">
                 <img
-                  src={post.author.avatar}
-                  alt={post.author.name}
+                  src={post.author_avatar || ""}
+                  alt={post.author_name}
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-gray-900">{post.author.name}</h3>
-                    {post.author.verified && (
+                    <h3 className="text-gray-900">{post.author_name}</h3>
+                    {post.author_verified && (
                       <div className="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs">✓</span>
                       </div>
@@ -219,7 +204,7 @@ export function CommunityPage() {
                     )}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
-                    <span>{post.timestamp}</span>
+                    <span>{formatTimeAgo(post.created_at)}</span>
                     {post.location && (
                       <>
                         <span>•</span>

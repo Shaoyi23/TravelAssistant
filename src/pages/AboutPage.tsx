@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Sparkles,
   Target,
@@ -8,8 +9,30 @@ import {
   Phone,
   Compass,
 } from "lucide-react";
+import { teamService, type TeamMember } from "../services/content";
 
 export function AboutPage() {
+  const [team, setTeam] = useState<TeamMember[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      try {
+        setLoading(true);
+        const data = await teamService.getAll();
+        setTeam(data);
+      } catch (err) {
+        setError("Failed to fetch team members");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeam();
+  }, []);
+
   const features = [
     {
       icon: Sparkles,
@@ -33,30 +56,6 @@ export function AboutPage() {
       title: "精准匹配",
       description:
         "多维度筛选系统，从预算、时间、兴趣等角度为您找到完美的旅行目的地",
-    },
-  ];
-
-  const team = [
-    {
-      name: "张明",
-      role: "创始人 & CEO",
-      avatar:
-        "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      description: "前Google AI研究员，15年旅游行业经验",
-    },
-    {
-      name: "李华",
-      role: "CTO",
-      avatar:
-        "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      description: "技术专家，专注于AI与大数据应用",
-    },
-    {
-      name: "王芳",
-      role: "产品总监",
-      avatar:
-        "https://images.unsplash.com/photo-1678286742832-26543bb49959?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1c2VyJTIwcHJvZmlsZSUyMHBvcnRyYWl0fGVufDF8fHx8MTc2Nzk5NDQ3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      description: "资深旅行达人，走遍全球80+国家",
     },
   ];
 
@@ -131,23 +130,45 @@ export function AboutPage() {
       {/* Team */}
       <div className="mb-20">
         <h2 className="text-3xl text-gray-900 text-center mb-12">核心团队</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {team.map((member, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-6 shadow-lg text-center hover:shadow-xl transition-shadow"
-            >
-              <img
-                src={member.avatar}
-                alt={member.name}
-                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-              />
-              <h3 className="text-xl text-gray-900 mb-1">{member.name}</h3>
-              <div className="text-blue-600 mb-3">{member.role}</div>
-              <p className="text-gray-600 text-sm">{member.description}</p>
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl p-6 shadow-lg text-center"
+              >
+                <div className="w-24 h-24 rounded-full mx-auto mb-4 bg-gray-200 animate-pulse"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/3 mx-auto mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <p className="text-red-600">{error}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {team.map((member) => (
+              <div
+                key={member.id}
+                className="bg-white rounded-xl p-6 shadow-lg text-center hover:shadow-xl transition-shadow"
+              >
+                <img
+                  src={member.avatar || ""}
+                  alt={member.name}
+                  className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                />
+                <h3 className="text-xl text-gray-900 mb-1">{member.name}</h3>
+                <div className="text-blue-600 mb-3">{member.role}</div>
+                <p className="text-gray-600 text-sm">
+                  {member.description || ""}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Contact */}

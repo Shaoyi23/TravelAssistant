@@ -1,9 +1,30 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BookOpen, Clock, User, Search, TrendingUp } from "lucide-react";
+import { guidesService, type Guide } from "../services/content";
 
 export function GuidesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchGuides = async () => {
+      try {
+        setLoading(true);
+        const data = await guidesService.getAll();
+        setGuides(data);
+      } catch (err) {
+        setError("Failed to fetch guides");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuides();
+  }, []);
 
   const categories = [
     { id: "all", label: "全部攻略" },
@@ -11,99 +32,6 @@ export function GuidesPage() {
     { id: "tips", label: "旅行技巧" },
     { id: "food", label: "美食推荐" },
     { id: "budget", label: "省钱攻略" },
-  ];
-
-  const guides = [
-    {
-      id: 1,
-      title: "巴黎七日深度游攻略",
-      description:
-        "从卢浮宫到埃菲尔铁塔，带你探索巴黎最经典的景点和隐藏的小众咖啡馆，体验地道的法式浪漫",
-      author: "旅行达人小王",
-      readTime: "15 分钟",
-      publishDate: "2026-01-05",
-      image:
-        "https://images.unsplash.com/photo-1431274172761-fca41d930114?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwYXJpcyUyMGVpZmZlbCUyMHRvd2VyfGVufDF8fHx8MTc2Nzk4MzIyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      tags: ["欧洲", "城市游", "文化"],
-      views: 12453,
-      likes: 856,
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "东京美食终极指南",
-      description:
-        "从米其林餐厅到街头小吃，一网打尽东京必吃美食。包含详细地址、价格区间和最佳用餐时间",
-      author: "美食探索者",
-      readTime: "12 分钟",
-      publishDate: "2026-01-03",
-      image:
-        "https://images.unsplash.com/photo-1583915223588-7d88ebf23414?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0b2t5byUyMGNpdHklMjBuaWdodHxlbnwxfHx8fDE3NjgwNDg2Mzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      tags: ["日本", "美食", "攻略"],
-      views: 9876,
-      likes: 723,
-      featured: true,
-    },
-    {
-      id: 3,
-      title: "瑞士阿尔卑斯滑雪完全攻略",
-      description:
-        "最佳滑雪季节、雪场选择、装备租赁、住宿推荐，以及新手入门指南，让你的滑雪之旅完美无缺",
-      author: "户外运动家",
-      readTime: "18 分钟",
-      publishDate: "2025-12-28",
-      image:
-        "https://images.unsplash.com/photo-1597434429739-2574d7e06807?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb3VudGFpbiUyMGxhbmRzY2FwZSUyMG5hdHVyZXxlbnwxfHx8fDE3Njc5ODgxMTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      tags: ["瑞士", "冬季", "滑雪"],
-      views: 7654,
-      likes: 543,
-      featured: false,
-    },
-    {
-      id: 4,
-      title: "圣托里尼拍照指南",
-      description:
-        "最佳拍照时间、经典机位推荐、如何避开人群，以及后期调色技巧，助你拍出ins风大片",
-      author: "摄影师李明",
-      readTime: "10 分钟",
-      publishDate: "2025-12-25",
-      image:
-        "https://images.unsplash.com/photo-1664112732671-877dc0030ba7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW50b3JpbmklMjBncmVlY2UlMjBpc2xhbmR8ZW58MXx8fHwxNzY4MDQ4NjQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      tags: ["希腊", "摄影", "海岛"],
-      views: 15234,
-      likes: 1234,
-      featured: true,
-    },
-    {
-      id: 5,
-      title: "伦敦省钱旅行攻略",
-      description:
-        "如何在预算有限的情况下玩转伦敦？免费景点、平价美食、交通省钱技巧全攻略",
-      author: "穷游达人",
-      readTime: "14 分钟",
-      publishDate: "2025-12-20",
-      image:
-        "https://images.unsplash.com/photo-1745016176874-cd3ed3f5bfc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsb25kb24lMjBiaWclMjBiZW58ZW58MXx8fHwxNzY4MDU1NTUwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      tags: ["英国", "省钱", "城市游"],
-      views: 11234,
-      likes: 891,
-      featured: false,
-    },
-    {
-      id: 6,
-      title: "迪拜奢华体验指南",
-      description:
-        "从帆船酒店到棕榈岛，探索迪拜最顶级的奢华体验。包含高端购物、米其林餐厅推荐",
-      author: "奢旅专家",
-      readTime: "16 分钟",
-      publishDate: "2025-12-18",
-      image:
-        "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkdWJhaSUyMHNreWxpbmV8ZW58MXx8fHwxNzY3OTcxOTY3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      tags: ["迪拜", "奢华", "购物"],
-      views: 8765,
-      likes: 654,
-      featured: false,
-    },
   ];
 
   const filteredGuides = guides.filter((guide) => {
@@ -114,6 +42,53 @@ export function GuidesPage() {
 
     return matchesSearch;
   });
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mb-12">
+          <h1 className="text-4xl text-gray-900 mb-4">旅行攻略</h1>
+          <p className="text-lg text-gray-600">
+            探索世界各地的旅行经验和实用建议
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {[1, 2].map((i) => (
+            <div
+              key={i}
+              className="bg-white rounded-2xl overflow-hidden shadow-lg animate-pulse"
+            >
+              <div className="h-64 bg-gray-200"></div>
+              <div className="p-6">
+                <div className="h-6 bg-gray-200 rounded mb-3 w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded mb-4 w-full"></div>
+                <div className="flex gap-4">
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                  <div className="h-4 bg-gray-200 rounded w-20"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            重新加载
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -176,7 +151,7 @@ export function GuidesPage() {
                 >
                   <div className="relative h-64">
                     <img
-                      src={guide.image}
+                      src={guide.cover_image}
                       alt={guide.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -209,7 +184,7 @@ export function GuidesPage() {
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
-                          <span>{guide.readTime}</span>
+                          <span>{guide.read_time}</span>
                         </div>
                       </div>
                       <button className="text-blue-600 hover:text-blue-700">
@@ -237,7 +212,7 @@ export function GuidesPage() {
             >
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={guide.image}
+                  src={guide.cover_image}
                   alt={guide.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -267,7 +242,7 @@ export function GuidesPage() {
                 <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-100">
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    <span>{guide.readTime}</span>
+                    <span>{guide.read_time}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <span>{guide.views.toLocaleString()} 阅读</span>
