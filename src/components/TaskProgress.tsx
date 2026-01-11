@@ -1,4 +1,3 @@
-import React from "react";
 import type { AgentTask } from "../store/tripStore";
 import { Card, CardContent } from "./ui/card";
 import { Badge } from "./ui/badge";
@@ -10,7 +9,7 @@ interface TaskProgressProps {
 
 function TaskProgress({ tasks }: TaskProgressProps) {
   // 根据任务状态返回不同的样式类
-  const getStatusVariant = (status: AgentTask['status']) => {
+  const getStatusVariant = (status: AgentTask["status"]) => {
     switch (status) {
       case "pending":
         return "secondary" as const;
@@ -26,7 +25,7 @@ function TaskProgress({ tasks }: TaskProgressProps) {
   };
 
   // 根据任务状态返回不同的图标
-  const getStatusIcon = (status: AgentTask['status']) => {
+  const getStatusIcon = (status: AgentTask["status"]) => {
     switch (status) {
       case "pending":
         return <Clock className="w-5 h-5 text-muted-foreground" />;
@@ -41,7 +40,7 @@ function TaskProgress({ tasks }: TaskProgressProps) {
     }
   };
 
-  const getStatusText = (status: AgentTask['status']) => {
+  const getStatusText = (status: AgentTask["status"]) => {
     switch (status) {
       case "pending":
         return "待执行";
@@ -69,11 +68,11 @@ function TaskProgress({ tasks }: TaskProgressProps) {
           <CardContent className="p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-start gap-3 flex-1">
-                <div className="mt-0.5">
-                  {getStatusIcon(task.status)}
-                </div>
+                <div className="mt-0.5">{getStatusIcon(task.status)}</div>
                 <div className="flex-1">
-                  <h4 className="font-semibold text-foreground mb-1">{task.name}</h4>
+                  <h4 className="font-semibold text-foreground mb-1">
+                    {task.name}
+                  </h4>
                   <p className="text-sm text-muted-foreground">
                     {task.description}
                   </p>

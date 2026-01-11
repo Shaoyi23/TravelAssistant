@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { Search, MapPin, Calendar, Users } from 'lucide-react';
+import { useState } from "react";
+import { Search, MapPin, Calendar, Users } from "lucide-react";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
 }
 
 export function SearchBar({ onSearch }: SearchBarProps) {
-  const [searchValue, setSearchValue] = useState('');
-  const [destination, setDestination] = useState('');
-  const [dateRange, setDateRange] = useState('');
-  const [travelers, setTravelers] = useState('2 位成人');
+  const [destination, setDestination] = useState("");
+  const [dateRange, setDateRange] = useState("");
+  const [travelers, setTravelers] = useState("2 位成人");
 
   const handleSearch = () => {
     onSearch(destination);

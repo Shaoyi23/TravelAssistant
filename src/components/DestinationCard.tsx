@@ -1,5 +1,4 @@
-import React from 'react';
-import { MapPin, Clock, Star, Heart, TrendingUp } from 'lucide-react';
+import { MapPin, Clock, Star, Heart, TrendingUp } from "lucide-react";
 
 interface Destination {
   id: number;
@@ -29,10 +28,10 @@ export function DestinationCard({ destination }: DestinationCardProps) {
           alt={destination.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-        
+
         {/* Top Badges */}
         <div className="absolute top-4 left-4 right-4 flex items-start justify-between">
           {destination.recommended && (
@@ -45,7 +44,7 @@ export function DestinationCard({ destination }: DestinationCardProps) {
             <Heart className="w-4 h-4 text-gray-700" />
           </button>
         </div>
-        
+
         {/* Bottom Info */}
         <div className="absolute bottom-4 left-4 right-4">
           <h3 className="text-white text-2xl mb-1">{destination.name}</h3>
@@ -55,13 +54,13 @@ export function DestinationCard({ destination }: DestinationCardProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Card Content */}
       <div className="p-5">
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
           {destination.description}
         </p>
-        
+
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
           {destination.tags.map((tag, index) => (
@@ -73,20 +72,22 @@ export function DestinationCard({ destination }: DestinationCardProps) {
             </span>
           ))}
         </div>
-        
+
         {/* Rating & Duration */}
         <div className="flex items-center gap-4 mb-4 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
             <span className="text-sm text-gray-900">{destination.rating}</span>
-            <span className="text-sm text-gray-500">({destination.reviews})</span>
+            <span className="text-sm text-gray-500">
+              ({destination.reviews})
+            </span>
           </div>
           <div className="flex items-center gap-1 text-gray-600">
             <Clock className="w-4 h-4" />
             <span className="text-sm">{destination.duration}</span>
           </div>
         </div>
-        
+
         {/* Price & CTA */}
         <div className="flex items-center justify-between">
           <div>

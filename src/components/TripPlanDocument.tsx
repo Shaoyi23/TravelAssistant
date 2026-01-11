@@ -1,9 +1,17 @@
-import React from 'react';
-import type { TripPlan, Attraction } from '../store/tripStore';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Download, MapPin, Calendar, DollarSign, Heart, Cloud, Building2, Lightbulb } from 'lucide-react';
-import { Separator } from './ui/separator';
+import type { TripPlan } from "../store/tripStore";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "./ui/button";
+import {
+  Download,
+  MapPin,
+  Calendar,
+  DollarSign,
+  Heart,
+  Cloud,
+  Building2,
+  Lightbulb,
+} from "lucide-react";
+import { Separator } from "./ui/separator";
 
 interface TripPlanDocumentProps {
   tripPlan: TripPlan;
@@ -19,47 +27,51 @@ function TripPlanDocument({ tripPlan }: TripPlanDocumentProps) {
     text += `目的地: ${destination}\n`;
     text += `预算: ${budget}元\n`;
     text += `天数: ${days}天\n`;
-    text += `兴趣: ${interests.join('、')}\n\n`;
-    
+    text += `兴趣: ${interests.join("、")}\n\n`;
+
     text += `天气情况：\n${planDetails.weather}\n\n`;
-    
+
     text += `推荐景点：\n`;
     planDetails.attractions.forEach((attraction, index) => {
-      if (typeof attraction === 'string') {
+      if (typeof attraction === "string") {
         text += `${index + 1}. ${attraction}\n`;
       } else {
-        const name = attraction.name || '';
-        const address = attraction.address || attraction.说明 || '';
-        const desc = attraction.description || attraction.说明 || '';
-        text += `${index + 1}. ${name}${address ? ` (${address})` : ''}${desc ? ` - ${desc}` : ''}\n`;
+        const name = attraction.name || "";
+        const address = attraction.address || attraction.说明 || "";
+        const desc = attraction.description || attraction.说明 || "";
+        text += `${index + 1}. ${name}${address ? ` (${address})` : ""}${
+          desc ? ` - ${desc}` : ""
+        }\n`;
       }
     });
     text += `\n`;
-    
+
     text += `行程安排：\n`;
     planDetails.itinerary.forEach((day, index) => {
       text += `第${index + 1}天：${day}\n`;
     });
     text += `\n`;
-    
+
     text += `住宿推荐：\n${planDetails.accommodation}\n\n`;
-    
+
     text += `旅行小贴士：\n`;
     planDetails.tips.forEach((tip, index) => {
       text += `${index + 1}. ${tip}\n`;
     });
-    
+
     return text;
   };
 
   // 下载旅行计划
   const downloadPlan = () => {
     const text = formatPlanAsText();
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    link.download = `旅行计划_${tripPlan.destination}_${new Date().toISOString().slice(0, 10)}.txt`;
+    link.download = `旅行计划_${tripPlan.destination}_${new Date()
+      .toISOString()
+      .slice(0, 10)}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -105,7 +117,7 @@ function TripPlanDocument({ tripPlan }: TripPlanDocumentProps) {
             <Heart className="w-5 h-5 text-primary" />
             <div>
               <p className="text-sm text-muted-foreground">兴趣</p>
-              <p className="font-semibold">{tripPlan.interests.join('、')}</p>
+              <p className="font-semibold">{tripPlan.interests.join("、")}</p>
             </div>
           </div>
         </div>
@@ -118,7 +130,9 @@ function TripPlanDocument({ tripPlan }: TripPlanDocumentProps) {
             <Cloud className="w-5 h-5 text-primary" />
             <h4 className="text-lg font-semibold">天气情况</h4>
           </div>
-          <p className="text-muted-foreground leading-relaxed">{tripPlan.planDetails.weather}</p>
+          <p className="text-muted-foreground leading-relaxed">
+            {tripPlan.planDetails.weather}
+          </p>
         </div>
 
         <Separator />
@@ -131,11 +145,15 @@ function TripPlanDocument({ tripPlan }: TripPlanDocumentProps) {
           </div>
           <ul className="space-y-3">
             {tripPlan.planDetails.attractions.map((attraction, index) => {
-              const isObject = typeof attraction === 'object';
+              const isObject = typeof attraction === "object";
               const name = isObject ? attraction.name : attraction;
-              const address = isObject ? (attraction.address || attraction.说明) : null;
-              const description = isObject ? (attraction.description || attraction.说明) : null;
-              
+              const address = isObject
+                ? attraction.address || attraction.说明
+                : null;
+              const description = isObject
+                ? attraction.description || attraction.说明
+                : null;
+
               return (
                 <li key={index} className="flex items-start gap-2">
                   <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-semibold">
@@ -174,7 +192,9 @@ function TripPlanDocument({ tripPlan }: TripPlanDocumentProps) {
                 <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-semibold">
                   第{index + 1}天
                 </div>
-                <p className="flex-1 text-muted-foreground leading-relaxed pt-2">{day}</p>
+                <p className="flex-1 text-muted-foreground leading-relaxed pt-2">
+                  {day}
+                </p>
               </div>
             ))}
           </div>
@@ -188,7 +208,9 @@ function TripPlanDocument({ tripPlan }: TripPlanDocumentProps) {
             <Building2 className="w-5 h-5 text-primary" />
             <h4 className="text-lg font-semibold">住宿推荐</h4>
           </div>
-          <p className="text-muted-foreground leading-relaxed">{tripPlan.planDetails.accommodation}</p>
+          <p className="text-muted-foreground leading-relaxed">
+            {tripPlan.planDetails.accommodation}
+          </p>
         </div>
 
         <Separator />

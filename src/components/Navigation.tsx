@@ -1,5 +1,4 @@
-import React from 'react';
-import { Compass, User, Heart, Settings } from 'lucide-react';
+import { Compass, User, Heart, Settings } from "lucide-react";
 
 export function Navigation() {
   return (
@@ -13,15 +12,35 @@ export function Navigation() {
             </div>
             <span className="text-xl text-gray-900">AI 旅行助手</span>
           </div>
-          
+
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">探索</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">攻略</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">社区</a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors">关于</a>
+            <a
+              href="#"
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              探索
+            </a>
+            <a
+              href="#"
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              攻略
+            </a>
+            <a
+              href="#"
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              社区
+            </a>
+            <a
+              href="#"
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              关于
+            </a>
           </div>
-          
+
           {/* Right Icons */}
           <div className="flex items-center gap-4">
             <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">

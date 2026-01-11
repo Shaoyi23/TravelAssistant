@@ -1,10 +1,15 @@
-import React from "react";
 import { useForm } from "react-hook-form";
 import useTripStore from "../store/tripStore";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Badge } from "./ui/badge";
 
 const availableInterests = [
@@ -90,7 +95,9 @@ function TripForm({ onSubmit }: TripFormProps) {
               className={errors.destination ? "border-destructive" : ""}
             />
             {errors.destination && (
-              <p className="text-sm text-destructive">{errors.destination.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.destination.message}
+              </p>
             )}
           </div>
 
@@ -111,7 +118,9 @@ function TripForm({ onSubmit }: TripFormProps) {
               className={errors.budget ? "border-destructive" : ""}
             />
             {errors.budget && (
-              <p className="text-sm text-destructive">{errors.budget.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.budget.message}
+              </p>
             )}
           </div>
 
@@ -146,7 +155,9 @@ function TripForm({ onSubmit }: TripFormProps) {
               {availableInterests.map((interest) => (
                 <Badge
                   key={interest}
-                  variant={selectedInterests.includes(interest) ? "default" : "outline"}
+                  variant={
+                    selectedInterests.includes(interest) ? "default" : "outline"
+                  }
                   className="cursor-pointer px-4 py-2 text-sm hover:bg-primary/80 transition-colors"
                   onClick={() => handleInterestToggle(interest)}
                 >

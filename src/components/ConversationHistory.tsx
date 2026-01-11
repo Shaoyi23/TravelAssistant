@@ -1,20 +1,21 @@
-import React from 'react';
-import { useRef, useEffect } from 'react';
-import type { ConversationMessage } from '../store/tripStore';
-import { ScrollArea } from './ui/scroll-area';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Avatar, AvatarFallback } from './ui/avatar';
+import { useRef, useEffect } from "react";
+import type { ConversationMessage } from "../store/tripStore";
+import { ScrollArea } from "./ui/scroll-area";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 interface ConversationHistoryProps {
   conversationHistory: ConversationMessage[];
 }
 
-function ConversationHistory({ conversationHistory }: ConversationHistoryProps) {
+function ConversationHistory({
+  conversationHistory,
+}: ConversationHistoryProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 自动滚动到底部
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -31,8 +32,12 @@ function ConversationHistory({ conversationHistory }: ConversationHistoryProps) 
           <div className="space-y-4">
             {conversationHistory.map((message, index) => (
               <div
-                key={message.id || `msg-${index}-${message.message.slice(0, 10)}`}
-                className={`flex gap-3 ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                key={
+                  message.id || `msg-${index}-${message.message.slice(0, 10)}`
+                }
+                className={`flex gap-3 ${
+                  message.isUser ? "justify-end" : "justify-start"
+                }`}
               >
                 {!message.isUser && (
                   <Avatar className="h-8 w-8">
@@ -44,8 +49,8 @@ function ConversationHistory({ conversationHistory }: ConversationHistoryProps) 
                 <div
                   className={`max-w-[80%] rounded-lg p-3 ${
                     message.isUser
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-foreground'
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
                   }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">
