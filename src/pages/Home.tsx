@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Navigation } from "../components/Navigation";
 import { Hero } from "../components/Hero";
 import { SearchBar } from "../components/SearchBar";
 import { FilterSection } from "../components/FilterSection";
@@ -9,7 +8,7 @@ import {
   type Destination,
 } from "../services/destinations";
 
-export default function App() {
+export function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({
     tripType: "all",
@@ -60,8 +59,7 @@ export default function App() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      <Navigation />
+    <>
       <Hero />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -119,6 +117,6 @@ export default function App() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
